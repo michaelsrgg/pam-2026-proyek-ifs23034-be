@@ -9,9 +9,7 @@ plugins {
     kotlin("plugin.serialization") version "2.1.21"
 }
 
-kotlin {
-    jvmToolchain(21) // ganti dari 25 ke 21
-}
+
 
 group = "org.course"
 version = "0.0.1"
@@ -41,8 +39,8 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
     implementation("io.ktor:ktor-server-auth:$ktor_version")
     implementation("io.ktor:ktor-server-auth-jwt:$ktor_version")
-    implementation("io.ktor:ktor-server-host-common:3.1.3")
-    implementation("io.ktor:ktor-server-status-pages:3.1.3")
+    implementation("io.insert-koin:koin-ktor:4.0.4")
+    implementation("io.insert-koin:koin-logger-slf4j:4.0.4")
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("org.postgresql:postgresql:42.7.9")
     implementation("org.jetbrains.exposed:exposed-core:0.61.0")
