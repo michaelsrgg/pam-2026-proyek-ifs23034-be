@@ -9,8 +9,6 @@ plugins {
     kotlin("plugin.serialization") version "2.1.21"
 }
 
-
-
 group = "org.course"
 version = "0.0.1"
 
@@ -47,10 +45,17 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:0.61.0")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.61.0")
     implementation("org.jetbrains.exposed:exposed-kotlin-datetime:0.61.0")
-    implementation("io.insert-koin:koin-ktor:4.0.4")
-    implementation("io.insert-koin:koin-logger-slf4j:4.0.4")
     implementation("io.github.cdimascio:dotenv-kotlin:$dotenv_version")
     implementation("org.mindrot:jbcrypt:0.4")
     testImplementation("io.ktor:ktor-server-test-host")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions.jvmTarget = "25"
+}
+
+tasks.withType<JavaCompile> {
+    sourceCompatibility = "25"
+    targetCompatibility = "25"
 }
