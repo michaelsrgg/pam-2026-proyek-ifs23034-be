@@ -52,10 +52,10 @@ dependencies {
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions.jvmTarget = "25"
+    kotlinOptions.jvmTarget = "23"
 }
 
 tasks.withType<JavaCompile> {
-    sourceCompatibility = "25"
-    targetCompatibility = "25"
+    sourceCompatibility = "23"
+    targetCompatibility = "23"
 }
