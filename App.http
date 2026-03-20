@@ -1,0 +1,456 @@
+### Course App API - REST Client Test File
+### Gunakan IntelliJ IDEA / VS Code REST Client extension
+
+@baseUrl = http://localhost:8080
+@authToken = PASTE_AUTH_TOKEN_HERE
+@refreshToken = PASTE_REFRESH_TOKEN_HERE
+@courseId = PASTE_COURSE_ID_HERE
+@courseSlug = PASTE_COURSE_SLUG_HERE
+@lessonId = PASTE_LESSON_ID_HERE
+@categoryId = PASTE_CATEGORY_ID_HERE
+
+# ══════════════════════════════════════════
+# HEALTH CHECK
+# ══════════════════════════════════════════
+
+### GET Health
+GET {{baseUrl}}/health
+
+### GET Root
+GET {{baseUrl}}/
+
+# ══════════════════════════════════════════
+# AUTH
+# ══════════════════════════════════════════
+
+### POST Register (Student)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Andi Mahasiswa",
+  "username": "andi_mhs",
+  "email": "andi@example.com",
+  "password": "Password123",
+  "role": "student"
+}
+
+###
+
+### POST Register (Instructor)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Citra Instruktur",
+  "username": "citra_instr",
+  "email": "citra@example.com",
+  "password": "Password123",
+  "role": "instructor"
+}
+
+###
+
+### POST Login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "budi_instructor",
+  "password": "Password123"
+}
+
+###
+
+### POST Refresh Token
+POST {{baseUrl}}/auth/refresh-token
+Content-Type: application/json
+
+{
+  "authToken": "{{authToken}}",
+  "refreshToken": "{{refreshToken}}"
+}
+
+###
+
+### POST Logout
+POST {{baseUrl}}/auth/logout
+Content-Type: application/json
+
+{
+  "authToken": "{{authToken}}"
+}
+
+# ══════════════════════════════════════════
+# USERS / PROFILE
+# ══════════════════════════════════════════
+
+### GET My Profile
+GET {{baseUrl}}/users/me
+Authorization: Bearer {{authToken}}
+
+###
+
+### PUT Update Profile
+PUT {{baseUrl}}/users/me
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Budi Santoso Updated",
+  "bio": "Instruktur senior dengan pengalaman 10 tahun."
+}
+
+###
+
+### PUT Change Password
+PUT {{baseUrl}}/users/me/password
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "currentPassword": "Password123",
+  "newPassword": "NewPassword456",
+  "confirmPassword": "NewPassword456"
+}
+
+###
+
+### PUT Upload Photo (form-data)
+PUT {{baseUrl}}/users/me/photo
+Authorization: Bearer {{authToken}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="photo"; filename="avatar.jpg"
+Content-Type: image/jpeg
+
+< ./uploads/examples/me.png
+--boundary--
+
+# ══════════════════════════════════════════
+# CATEGORIES
+# ══════════════════════════════════════════
+
+### GET All Categories (Public)
+GET {{baseUrl}}/categories
+
+###
+
+### GET Category by ID (Public)
+GET {{baseUrl}}/categories/{{categoryId}}
+
+###
+
+### POST Create Category (Instructor)
+POST {{baseUrl}}/categories
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Blockchain & Web3",
+  "description": "Pelajari teknologi blockchain, smart contract, dan DeFi",
+  "icon": "⛓️"
+}
+
+###
+
+### PUT Update Category (Instructor)
+PUT {{baseUrl}}/categories/{{categoryId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Blockchain & Web3 Updated",
+  "description": "Deskripsi baru",
+  "icon": "🔗"
+}
+
+###
+
+### DELETE Category (Instructor)
+DELETE {{baseUrl}}/categories/{{categoryId}}
+Authorization: Bearer {{authToken}}
+
+# ══════════════════════════════════════════
+# COURSES — Public
+# ══════════════════════════════════════════
+
+### GET All Published Courses
+GET {{baseUrl}}/courses
+
+###
+
+### GET Courses with Filters
+GET {{baseUrl}}/courses?search=kotlin&level=beginner&sortBy=popular&page=1&perPage=5
+
+###
+
+### GET Course Detail by Slug
+GET {{baseUrl}}/courses/{{courseSlug}}
+Authorization: Bearer {{authToken}}
+
+# ══════════════════════════════════════════
+# COURSES — Instructor
+# ══════════════════════════════════════════
+
+### GET Instructor Dashboard
+GET {{baseUrl}}/instructor/courses/dashboard/stats
+Authorization: Bearer {{authToken}}
+
+###
+
+### GET My Courses (Instructor)
+GET {{baseUrl}}/instructor/courses?page=1&perPage=10
+Authorization: Bearer {{authToken}}
+
+###
+
+### POST Create Course (Instructor)
+POST {{baseUrl}}/instructor/courses
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "Belajar Kotlin Ktor dari Nol hingga Mahir",
+  "description": "Kursus lengkap dan komprehensif untuk mempelajari Kotlin dan framework Ktor dalam membangun REST API yang scalable dan production-ready.",
+  "categoryId": "{{categoryId}}",
+  "level": "beginner",
+  "language": "Indonesia",
+  "price": 299000,
+  "discountPrice": 149000,
+  "status": "draft"
+}
+
+###
+
+### GET My Course Detail (Instructor)
+GET {{baseUrl}}/instructor/courses/{{courseId}}
+Authorization: Bearer {{authToken}}
+
+###
+
+### PUT Update Course (Instructor)
+PUT {{baseUrl}}/instructor/courses/{{courseId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "Belajar Kotlin Ktor - Updated",
+  "description": "Deskripsi yang sudah diperbarui dengan konten yang lebih lengkap dan komprehensif untuk para developer.",
+  "level": "intermediate",
+  "language": "Indonesia",
+  "price": 399000,
+  "discountPrice": 199000,
+  "status": "draft"
+}
+
+###
+
+### PATCH Publish Course
+PATCH {{baseUrl}}/instructor/courses/{{courseId}}/status/published
+Authorization: Bearer {{authToken}}
+
+###
+
+### PATCH Archive Course
+PATCH {{baseUrl}}/instructor/courses/{{courseId}}/status/archived
+Authorization: Bearer {{authToken}}
+
+###
+
+### PUT Upload Thumbnail (form-data)
+PUT {{baseUrl}}/instructor/courses/{{courseId}}/thumbnail
+Authorization: Bearer {{authToken}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="thumbnail"; filename="thumbnail.jpg"
+Content-Type: image/jpeg
+
+< ./uploads/examples/me.png
+--boundary--
+
+###
+
+### DELETE Course (Instructor)
+DELETE {{baseUrl}}/instructor/courses/{{courseId}}
+Authorization: Bearer {{authToken}}
+
+# ══════════════════════════════════════════
+# LESSONS
+# ══════════════════════════════════════════
+
+### GET Lessons in Course (Public/Student)
+GET {{baseUrl}}/courses/{{courseId}}/lessons
+Authorization: Bearer {{authToken}}
+
+###
+
+### GET Lesson Detail
+GET {{baseUrl}}/courses/{{courseId}}/lessons/{{lessonId}}
+Authorization: Bearer {{authToken}}
+
+###
+
+### POST Create Lesson (Instructor)
+POST {{baseUrl}}/courses/{{courseId}}/lessons
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "Pengenalan Kotlin dan Setup Environment",
+  "description": "Pada lesson ini kita akan mempelajari dasar-dasar Kotlin dan cara menyiapkan environment development.",
+  "contentType": "video",
+  "contentUrl": "https://www.youtube.com/watch?v=example",
+  "duration": 45,
+  "orderIndex": 1,
+  "isFree": true,
+  "isPublished": true
+}
+
+###
+
+### POST Create Text Lesson (Instructor)
+POST {{baseUrl}}/courses/{{courseId}}/lessons
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "Dasar-Dasar Pemrograman Kotlin",
+  "description": "Materi teks tentang sintaks dan fitur dasar Kotlin.",
+  "contentType": "text",
+  "content": "<h2>Kotlin Basics</h2><p>Kotlin adalah bahasa pemrograman modern yang berjalan di JVM...</p>",
+  "duration": 20,
+  "orderIndex": 2,
+  "isFree": false,
+  "isPublished": true
+}
+
+###
+
+### PUT Update Lesson (Instructor)
+PUT {{baseUrl}}/courses/{{courseId}}/lessons/{{lessonId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "Pengenalan Kotlin - Updated",
+  "description": "Deskripsi yang diperbarui.",
+  "contentType": "video",
+  "contentUrl": "https://www.youtube.com/watch?v=updated",
+  "duration": 50,
+  "orderIndex": 1,
+  "isFree": true,
+  "isPublished": true
+}
+
+###
+
+### PUT Reorder Lessons (Instructor)
+PUT {{baseUrl}}/courses/{{courseId}}/lessons/reorder
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "lessonIds": ["{{lessonId}}", "LESSON_ID_2", "LESSON_ID_3"]
+}
+
+###
+
+### DELETE Lesson (Instructor)
+DELETE {{baseUrl}}/courses/{{courseId}}/lessons/{{lessonId}}
+Authorization: Bearer {{authToken}}
+
+###
+
+### POST Update Lesson Progress (Student)
+POST {{baseUrl}}/courses/{{courseId}}/lessons/{{lessonId}}/progress
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "watchedSeconds": 2700,
+  "isCompleted": true
+}
+
+# ══════════════════════════════════════════
+# ENROLLMENTS
+# ══════════════════════════════════════════
+
+### POST Enroll in Course (Student)
+POST {{baseUrl}}/enrollments/{{courseId}}
+Authorization: Bearer {{authToken}}
+
+###
+
+### GET My Enrollments (Student)
+GET {{baseUrl}}/enrollments?page=1&perPage=10
+Authorization: Bearer {{authToken}}
+
+###
+
+### GET My Enrollments - Completed Only
+GET {{baseUrl}}/enrollments?status=completed
+Authorization: Bearer {{authToken}}
+
+###
+
+### GET Enrollment Detail + Lesson Progress
+GET {{baseUrl}}/enrollments/{{courseId}}
+Authorization: Bearer {{authToken}}
+
+###
+
+### DELETE Cancel Enrollment
+DELETE {{baseUrl}}/enrollments/{{courseId}}/cancel
+Authorization: Bearer {{authToken}}
+
+###
+
+### GET Course Students (Instructor)
+GET {{baseUrl}}/instructor/courses/{{courseId}}/students?page=1&perPage=20
+Authorization: Bearer {{authToken}}
+
+# ══════════════════════════════════════════
+# REVIEWS
+# ══════════════════════════════════════════
+
+### GET Reviews for Course (Public)
+GET {{baseUrl}}/courses/{{courseId}}/reviews?page=1&perPage=10
+
+###
+
+### POST Write Review (Student)
+POST {{baseUrl}}/courses/{{courseId}}/reviews
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "rating": 5,
+  "comment": "Kursus yang sangat bagus dan mudah dipahami! Instrukturnya menjelaskan dengan sangat jelas. Sangat direkomendasikan untuk pemula."
+}
+
+###
+
+### PUT Update Review (Student)
+PUT {{baseUrl}}/courses/{{courseId}}/reviews
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "rating": 4,
+  "comment": "Kursus yang bagus, tapi beberapa bagian bisa lebih diperdalam lagi."
+}
+
+###
+
+### GET My Review for Course
+GET {{baseUrl}}/courses/{{courseId}}/reviews/me
+Authorization: Bearer {{authToken}}
+
+###
+
+### DELETE My Review
+DELETE {{baseUrl}}/courses/{{courseId}}/reviews
+Authorization: Bearer {{authToken}}

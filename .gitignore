@@ -1,0 +1,14 @@
+.gradle/
+build/
+.env
+*.log
+logs/
+uploads/users/
+uploads/courses/
+uploads/lessons/
+!uploads/users/.gitkeep
+!uploads/courses/.gitkeep
+!uploads/lessons/.gitkeep
+.idea/
+*.iml
+out/

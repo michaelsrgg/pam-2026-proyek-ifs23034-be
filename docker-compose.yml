@@ -1,0 +1,79 @@
+version: "3.9"
+
+services:
+  # ── PostgreSQL Database ─────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: course_app_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       ${DB_NAME:-db_course_app}
+      POSTGRES_USER:     ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./data.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-db_course_app}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - course_net
+
+  # ── Ktor API Server ─────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: course_app_api
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      APP_HOST:    0.0.0.0
+      APP_PORT:    8080
+      DB_HOST:     db
+      DB_PORT:     5432
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    volumes:
+      - uploads_data:/app/uploads
+      - logs_data:/app/logs
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - course_net
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ── pgAdmin (opsional, untuk development) ──────────────────
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: course_app_pgadmin
+    restart: unless-stopped
+    profiles: ["dev"]   # hanya aktif jika --profile dev
+    environment:
+      PGADMIN_DEFAULT_EMAIL:    admin@course.local
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    networks:
+      - course_net
+
+volumes:
+  postgres_data:
+  uploads_data:
+  logs_data:
+
+networks:
+  course_net:
+    driver: bridge
