@@ -3,18 +3,18 @@ ktor:
     modules:
       - org.course.ApplicationKt.module
   deployment:
-    port: ${APP_PORT}
-    host: ${APP_HOST}
+    port: ${APP_PORT:8080}
+    host: ${APP_HOST:0.0.0.0}
 
   database:
-    host: ${DB_HOST}
-    port: ${DB_PORT}
-    name: ${DB_NAME}
-    user: ${DB_USER}
-    password: ${DB_PASSWORD}
+    host: ${DB_HOST:localhost}
+    port: ${DB_PORT:5432}
+    name: ${DB_NAME:course_db}
+    user: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
 
   jwt:
-    secret: "${JWT_SECRET}"
+    secret: ${JWT_SECRET:secret_key_default}
 
   upload:
     base_path: "uploads"
