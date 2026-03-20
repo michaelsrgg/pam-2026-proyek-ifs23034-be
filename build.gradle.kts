@@ -53,6 +53,10 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 }
 
+tasks.named("processResources") {
+    outputs.upToDateWhen { false }
+}
+
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.jvmTarget = "23"
 }
